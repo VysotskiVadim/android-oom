@@ -4,25 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import dev.vadzimv.oom.example.memory.gigabytesInBytes
+import dev.vadzimv.oom.example.memory.listHeapDumps
 import dev.vadzimv.oom.example.memory.trackMemoryUsage
 import dev.vadzimv.oom.example.ui.theme.OOMExampleTheme
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 class MainActivity : ComponentActivity() {
 
@@ -39,6 +41,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val memoryUsage = trackMemoryUsage()
+                        .collectAsStateWithLifecycle(null)
+                        .value
+                    val savedHeapDumps = savedHeapDumps()
                         .collectAsStateWithLifecycle(null)
                         .value
                     Column {
@@ -59,6 +64,21 @@ class MainActivity : ComponentActivity() {
                                 slowlyFillUpMemory()
                             }) {
                             Text(text = "Slow allocation")
+                        }
+                        if (!savedHeapDumps.isNullOrEmpty()) {
+                            Text(text = "Saved heap dumps:")
+                            Column(
+                                Modifier.verticalScroll(
+                                    rememberScrollState()
+                                )
+                            ) {
+                                savedHeapDumps.forEach {
+                                    Text(
+                                        text = it,
+                                        Modifier.padding(vertical = 10.dp)
+                                        )
+                                }
+                            }
                         }
                     }
                 }
@@ -94,4 +114,9 @@ class MainActivity : ComponentActivity() {
     private suspend fun slowDownAllocation() {
         yield()
     }
+
+    private fun savedHeapDumps() = flow<List<String>?> {
+        emit(listHeapDumps(applicationContext))
+    }
 }
+
