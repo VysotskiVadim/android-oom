@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import dev.vadzimv.oom.example.memory.gigabytesInBytes
 import dev.vadzimv.oom.example.memory.listHeapDumps
+import dev.vadzimv.oom.example.memory.megabytesInBytes
 import dev.vadzimv.oom.example.memory.trackMemoryUsage
 import dev.vadzimv.oom.example.ui.theme.OOMExampleTheme
 import kotlinx.coroutines.Dispatchers
@@ -87,24 +88,20 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun bigAllocation() {
-        bigArray = ByteArray(1.gigabytesInBytes())
+        bigArray = ByteArray(200.megabytesInBytes())
     }
 
     private fun slowlyFillUpMemory() {
         lifecycleScope.launch {
             launch(Dispatchers.Default) {
                 while (true) {
-                    repeat(10) {
-                        strings.add("hello")
-                    }
+                    strings.add("hello")
                     slowDownAllocation()
                 }
             }
             launch(Dispatchers.Default) {
                 while (true) {
-                    repeat(10) {
-                        arrays.add(intArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
-                    }
+                    arrays.add(intArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
                     slowDownAllocation()
                 }
             }

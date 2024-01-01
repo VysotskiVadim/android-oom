@@ -1,6 +1,8 @@
 package dev.vadzimv.oom.example.memory
 
-fun Int.gigabytesInBytes() = this * 1024 * 1024 * 1024
+fun Int.gigabytesInBytes() = (this * 1024).megabytesInBytes()
+
+fun Int.megabytesInBytes() = this * 1024 * 1024
 
 @JvmInline
 value class Bytes(
