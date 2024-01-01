@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             launch(Dispatchers.Default) {
                 while (true) {
-                    repeat(20) {
+                    repeat(10) {
                         strings.add("hello")
                     }
                     slowDownAllocation()
@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
             }
             launch(Dispatchers.Default) {
                 while (true) {
-                    repeat(20) {
+                    repeat(10) {
                         arrays.add(intArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
                     }
                     slowDownAllocation()
